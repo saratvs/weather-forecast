@@ -1,0 +1,11 @@
+/* npx @tailwindcss/cli -i ./src/styles/input.css -o ./src/styles/output.css --watch */
+
+/* Custom CSS */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
