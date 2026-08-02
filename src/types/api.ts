@@ -29,3 +29,22 @@ export interface GetCoordinateResponse {
   admin3: string;
   admin4: string;
 }
+
+interface hourly {}
+export interface GetWeatherRequest {
+  latitude: number;
+  longitude: number;
+  elevation?: number;
+  hourly?: {};
+  temperature_unit?: string;
+  wind_speed_unit?: string;
+  precipitation_unit?: string;
+  timeformat?: number;
+  past_days?: number;
+  start_date?: string;
+  end_date?: string;
+  cell_selection?: string;
+  apikey?: string;
+}
+
+export interface GetWeatherResponse {}
