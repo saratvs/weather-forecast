@@ -47,4 +47,15 @@ export interface GetWeatherRequest {
   apikey?: string;
 }
 
-export interface GetWeatherResponse {}
+export interface GetWeatherResponse {
+  current: {
+    temperature: number;
+    rain: number;
+    weatherCode: number;
+  };
+
+  daily: {
+    sunrise: Date;
+    sunset: Date;
+  };
+}

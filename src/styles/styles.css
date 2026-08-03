@@ -1,2 +1,37 @@
 /* npx @tailwindcss/cli -i ./src/styles/input.css -o ./src/styles/output.css --watch
  */
+body {
+  width: 100%;
+  height: 100vh;
+}
+.invisible {
+  display: none !important;
+}
+ul > li {
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: bold;
+}
+ul > li:hover {
+  opacity: 60%;
+}
+main {
+  padding: 20px;
+}
+main .weather-card {
+  overflow-y: auto;
+  padding: 20px;
+  background-color: rgb(243, 251, 244);
+  border: 1px solid #99c899c8;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  min-height: 200px;
+}
+main .weather-card > div {
+  display: flex;
+}
+main .weather-card > div > span {
+  margin-right: 5px;
+}

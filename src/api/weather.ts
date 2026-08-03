@@ -1,13 +1,14 @@
 // get information about weather
 import { fetchWeatherApi } from "openmeteo";
+import type { Coordinate } from "../types/weather";
 
-export async function getWeather() {
+export async function getWeather(coordinate: Coordinate) {
   const params = {
-    latitude: 52.52,
-    longitude: 13.41,
-    daily: ["weather_code", "sunrise", "sunset"],
-    hourly: ["temperature_2m", "rain", "weather_code"],
-    current: ["temperature_2m", "is_day", "rain"],
+    latitude: coordinate.latitude,
+    longitude: coordinate.longitude,
+    current: ["temperature_2m", "rain", "weather_code"],
+    hourly: ["temperature_2m", "weather_code", "rain"],
+    daily: ["sunrise", "sunset"],
   };
   const url = "https://api.open-meteo.com/v1/forecast";
   const responses = await fetchWeatherApi(url, params);
@@ -15,33 +16,22 @@ export async function getWeather() {
   // Process first location. Add a for-loop for multiple locations or weather models
   const response = responses[0];
 
-  // Attributes for timezone and location
-  const latitude = response.latitude();
-  const longitude = response.longitude();
-  const elevation = response.elevation();
   const utcOffsetSeconds = response.utcOffsetSeconds();
-
-  console.log(
-    `\nCoordinates: ${latitude}°N ${longitude}°E`,
-    `\nElevation: ${elevation}m asl`,
-    `\nTimezone difference to GMT+0: ${utcOffsetSeconds}s`,
-  );
 
   const current = response.current()!;
   const hourly = response.hourly()!;
   const daily = response.daily()!;
 
-  // Define Int64 variables so they can be processed accordingly
-  const sunrise = daily.variables(1)!;
-  const sunset = daily.variables(2)!;
+  const sunrise = daily.variables(0)!;
+  const sunset = daily.variables(1)!;
 
   // Note: The order of weather variables in the URL query and the indices below need to match!
   const weatherData = {
     current: {
       time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),
       temperature_2m: current.variables(0)!.value(),
-      is_day: current.variables(1)!.value(),
-      rain: current.variables(2)!.value(),
+      rain: current.variables(1)!.value(),
+      weather_code: current.variables(2)!.value(),
     },
     hourly: {
       time: Array.from(
@@ -57,8 +47,8 @@ export async function getWeather() {
           ),
       ),
       temperature_2m: hourly.variables(0)!.valuesArray(),
-      rain: hourly.variables(1)!.valuesArray(),
-      weather_code: hourly.variables(2)!.valuesArray(),
+      weather_code: hourly.variables(1)!.valuesArray(),
+      rain: hourly.variables(2)!.valuesArray(),
     },
     daily: {
       time: Array.from(
@@ -72,7 +62,6 @@ export async function getWeather() {
               1000,
           ),
       ),
-      weather_code: daily.variables(0)!.valuesArray(),
       // Map Int64 values to according structure
       sunrise: [...Array(sunrise.valuesInt64Length())].map(
         (_, i) =>
@@ -85,14 +74,21 @@ export async function getWeather() {
       ),
     },
   };
+  return {
+    current: {
+      temperature: current.variables(0)!.value(),
+      rain: current.variables(1)!.value(),
+      weatherCode: current.variables(2)!.value(),
+    },
 
-  // The 'weatherData' object now contains a simple structure, with arrays of datetimes and weather information
-  console.log(
-    `\nCurrent time: ${weatherData.current.time}\n`,
-    `\nCurrent temperature_2m: ${weatherData.current.temperature_2m}`,
-    `\nCurrent is_day: ${weatherData.current.is_day}`,
-    `\nCurrent rain: ${weatherData.current.rain}`,
-  );
-  console.log("\nHourly data:\n", weatherData.hourly);
-  console.log("\nDaily data:\n", weatherData.daily);
+    daily: {
+      sunrise: new Date(
+        (Number(sunrise.valuesInt64(0)) + utcOffsetSeconds) * 1000,
+      ),
+
+      sunset: new Date(
+        (Number(sunset.valuesInt64(0)) + utcOffsetSeconds) * 1000,
+      ),
+    },
+  };
 }

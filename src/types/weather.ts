@@ -1,21 +1,26 @@
 export interface Coordinate {
   latitude: number;
   longitude: number;
-  hourly: string;
+  city: string;
+  country: string;
 }
-export interface City {
-  name: string;
-  latitude: number;
-  longitude: number;
+type Rainy = {
+  rain: boolean;
+};
+export interface WeatherCardItem {
+  icon: string;
+  parameter: string | number | Rainy | Date;
 }
 
-type lang = "En" | "Fs";
+export interface WeatherCardProps {
+  current: {
+    temperature: number;
+    rain: number;
+    weatherCode: number;
+  };
 
-export interface City {
-  name: string;
-  count?: number;
-  format?: number;
-  language?: lang;
-  apikey?: string;
-  countryCode?: string;
+  daily: {
+    sunrise: Date;
+    sunset: Date;
+  };
 }
