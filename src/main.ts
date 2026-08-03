@@ -1,23 +1,15 @@
-import { createNavbar } from "./components/navbar.js";
 import { getCoordinates } from "./api/geocoding.js";
 import { getWeather } from "./api/weather.js";
 import { weatherCard } from "./components/weatherCard.js";
 import { loadingCard } from "./components/loadingCard.js";
-
-import "./styles/input.css";
-import { errorCard } from "./components/errorCard.js";
-import type { GetCoordinateResponse } from "./types/api.js";
+import { messageCard } from "./components/messageCard.js";
 import { mapCoordinate } from "./utils/mappers.js";
 import type { Coordinate } from "./types/weather.js";
 
-const app = document.querySelector("#app");
+import "./styles/input.css";
+
 const main = document.querySelector("#main") as HTMLElement | null;
 
-//when show navbar
-if (app) {
-  const navbar = createNavbar();
-  app.appendChild(navbar);
-}
 // when a city name is searched
 const searchInput = document.querySelector<HTMLInputElement>("#search");
 let timer: number;
@@ -33,7 +25,12 @@ searchInput?.addEventListener("input", () => {
     try {
       main!.innerHTML = loadingCard();
       const apiCoordinate = await getCoordinates(value);
+
+      if (apiCoordinate == null) {
+        main!.innerHTML = messageCard("City not found!");
+      }
       coordinate = mapCoordinate(apiCoordinate!);
+
       weather = await getWeather(coordinate);
 
       main!.innerHTML = weatherCard(value, weather);

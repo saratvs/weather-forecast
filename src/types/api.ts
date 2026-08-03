@@ -30,7 +30,6 @@ export interface GetCoordinateResponse {
   admin4: string;
 }
 
-interface hourly {}
 export interface GetWeatherRequest {
   latitude: number;
   longitude: number;
